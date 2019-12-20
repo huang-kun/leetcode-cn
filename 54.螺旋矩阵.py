@@ -24,34 +24,33 @@ class Solution:
         count = 0
         (maxX, maxY) = (col - 1, row - 1)
         # 在矩阵中需要收集的全部元素数量
-        end = row * col
+        total = row * col
 
-        # 位于左上角的指针p1
+        # 位于左上角的指针p1（限制最小y值的上边界）
         (x1, y1) = (0, 0)
-        # 位于右上角的指针p2
+        # 位于右上角的指针p2（限制最大x值的右边界）
         (x2, y2) = (maxX, 0)
-        # 位于右下角的指针p3
+        # 位于右下角的指针p3（限制最大y值的下边界）
         (x3, y3) = (maxX, maxY)
-        # 位于左下角的指针p4
+        # 位于左下角的指针p4（限制最小x值的左边界）
         (x4, y4) = (0, maxY)
         
-        # 移动坐标起始于p1
+        # 将坐标的起始位置设置在最外环的p1这里
         (x, y) = (x1, y1)
         # 收集第一个元素
         order.append(matrix[y][x])
         count += 1
-
-        # 如果指针移动超过矩阵边长的一半，结束
-        while x2 >= x4 and y1 <= y3:
+        
+        while True:
             # 收集p1 -> p2之间的元素
             while x < x2:
                 x += 1
                 order.append(matrix[y][x])
                 count += 1
-            # 完成后，向下移动p1
-            y1 += 1
-            # 避免后续重复收集，需要及时检查收集数量
-            if count == end:
+            # 向内环方向缩小p1的边界
+            (x1, y1) = (min(x4, x2), y1 + 1)
+            # 避免重复收集元素，及时检查收集数量
+            if count == total:
                 break
 
             # 收集p2 -> p3之间的元素
@@ -59,9 +58,9 @@ class Solution:
                 y += 1
                 order.append(matrix[y][x])
                 count += 1
-            # 完成后，向左移动p2
-            x2 -= 1
-            if count == end:
+            # 向内环方向缩小p2的边界
+            (x2, y2) = (x2 - 1, min(y1, y3))
+            if count == total:
                 break
 
             # 收集p3 -> p4之间的元素
@@ -69,9 +68,9 @@ class Solution:
                 x -= 1
                 order.append(matrix[y][x])
                 count += 1
-            # 完成后，向上移动p3
-            y3 -= 1
-            if count == end:
+            # 向内环方向缩小p3的边界
+            (x3, y3) = (max(x2, x4), y3 - 1)
+            if count == total:
                 break
 
             #收集p4 -> p1之间的元素
@@ -79,9 +78,9 @@ class Solution:
                 y -= 1
                 order.append(matrix[y][x])
                 count += 1
-            # 完成后，向右移动p4
-            x4 += 1
-            if count == end:
+            # 向内环方向缩小p4的边界
+            (x4, y4) = (x4 + 1, max(y3, y1))
+            if count == total:
                 break
         
         return order
