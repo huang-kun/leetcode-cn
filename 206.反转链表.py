@@ -24,26 +24,21 @@ class ListNode:
 
 class Solution:
 
-    # 递归法
+    # 迭代法：3个指针一边遍历一边反转，空间复杂度O(1)
     def reverseList(self, head: ListNode) -> ListNode:
         if head is None:
             return None
-
-        new_tail, new_head = self._reverseList(head)
-        new_tail.next = None
-        return new_head
-
-    # 递归获取原先的next节点，然后反转指向，同时也要将新链表的头节点一起返回
-    def _reverseList(self, head: ListNode) -> (ListNode, ListNode):
-        if head is None:
-            return None, None
-        
-        old_next, old_tail = self._reverseList(head.next)
-        if old_next is not None:
-            old_next.next = head
-        if old_tail is None:
-            old_tail = head
-        return head, old_tail
+        # 定义3个指针
+        prev, curr, next = None, head, head.next
+        while next:
+            # 反转当前节点的指向
+            curr.next = prev
+            # 3个指针依次向前移动
+            prev, curr, next = curr, next, next.next
+        # 反转最后一个节点的指向
+        curr.next = prev
+        # 最后一个节点成为新的head
+        return curr
 
 # @lc code=end
 
@@ -67,6 +62,26 @@ class Solution:
         node.next = None
         return first
 
+    # 递归法
+    def reverseList2(self, head: ListNode) -> ListNode:
+        if head is None:
+            return None
+
+        new_tail, new_head = self._reverseList(head)
+        new_tail.next = None
+        return new_head
+
+    # 递归获取原先的next节点，然后反转指向，同时也要将新链表的头节点一起返回
+    def _reverseList(self, head: ListNode) -> (ListNode, ListNode):
+        if head is None:
+            return None, None
+        
+        old_next, old_tail = self._reverseList(head.next)
+        if old_next is not None:
+            old_next.next = head
+        if old_tail is None:
+            old_tail = head
+        return head, old_tail
 
 if __name__ == "__main__":
     s = Solution()
