@@ -24,21 +24,20 @@ class ListNode:
 
 class Solution:
 
-    # 迭代法：3个指针一边遍历一边反转，空间复杂度O(1)
+    # 根据官方思路：按原始顺序迭代结点，并将它们逐个移动到列表的头部。
+    # https://leetcode-cn.com/explore/learn/card/linked-list/195/classic-problems/749/
     def reverseList(self, head: ListNode) -> ListNode:
         if head is None:
             return None
-        # 定义3个指针
-        prev, curr, next = None, head, head.next
-        while next:
-            # 反转当前节点的指向
-            curr.next = prev
-            # 3个指针依次向前移动
-            prev, curr, next = curr, next, next.next
-        # 反转最后一个节点的指向
-        curr.next = prev
-        # 最后一个节点成为新的head
-        return curr
+        
+        node = head
+        while node.next:
+            next = node.next
+            node.next = node.next.next
+            next.next = head
+            head = next
+
+        return head
 
 # @lc code=end
 
@@ -82,6 +81,22 @@ class Solution:
         if old_tail is None:
             old_tail = head
         return head, old_tail
+    
+    # 迭代法：3个指针一边遍历一边反转，空间复杂度O(1)
+    def reverseList3(self, head: ListNode) -> ListNode:
+        if head is None:
+            return None
+        # 定义3个指针
+        prev, curr, next = None, head, head.next
+        while next:
+            # 反转当前节点的指向
+            curr.next = prev
+            # 3个指针依次向前移动
+            prev, curr, next = curr, next, next.next
+        # 反转最后一个节点的指向
+        curr.next = prev
+        # 最后一个节点成为新的head
+        return curr
 
 if __name__ == "__main__":
     s = Solution()
