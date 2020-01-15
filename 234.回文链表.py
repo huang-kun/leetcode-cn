@@ -24,9 +24,61 @@ class ListNode:
 
 class Solution:
 
+    # 重新答题（2020年1月15日）
+    def isPalindrome(self, head: ListNode) -> bool:
+        # 快慢指针找到链表中间位置
+        fast = head
+        slow = head
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next
+            
+        if slow is None:
+            return True
+        if slow.next is None:
+            return slow.val == head.val
+        
+        # 反转链表的后半部分
+        prev, curr, next = None, slow, slow.next
+        while next:
+            curr.next = prev
+            prev, curr, next = curr, next, next.next
+        curr.next = prev
+                
+        # 回文比较
+        p1 = head
+        p2 = curr
+        while p2:
+            if p1.val != p2.val:
+                return False
+            p1 = p1.next
+            p2 = p2.next
+        
+        return True
+
+    # @lc code=end
+
+    # 初级思路：将该问题转换为，求解一个数组是否为回文数组？
+    # 需要O(n)的空间将链表转换为数组
+    def isPalindrome2(self, head: ListNode) -> bool:
+        arr = []
+        node = head
+        while node:
+            arr.append(node.val)
+            node = node.next
+        
+        i, j = 0, len(arr) - 1
+        while i < j:
+            if arr[i] != arr[j]:
+                return False
+            i += 1
+            j -= 1
+        
+        return True
+
     # 参考用户@王尼玛的图解
     # https://leetcode-cn.com/problems/palindrome-linked-list/solution/dong-hua-yan-shi-234-hui-wen-lian-biao-by-user7439/
-    def isPalindrome(self, head: ListNode) -> bool:
+    def isPalindrome1(self, head: ListNode) -> bool:
         if head is None or head.next is None:
             return True
         
@@ -58,7 +110,6 @@ class Solution:
         
         return True
         
-# @lc code=end
 
 def convert(s: str) -> ListNode:
     nodes = list(map(lambda x: ListNode(x), s.split("->")))
@@ -68,10 +119,12 @@ def convert(s: str) -> ListNode:
             temp.next = node
         temp = node
     return nodes[0]
-        
+
 if __name__ == "__main__":
     s = Solution()
+    assert s.isPalindrome(convert("1")) == True
     assert s.isPalindrome(convert("1->2")) == False
     assert s.isPalindrome(convert("1->2->1")) == True    
     assert s.isPalindrome(convert("1->2->3->4->5")) == False
     assert s.isPalindrome(convert("1->2->2->1")) == True
+    assert s.isPalindrome(convert("1->1->2->1")) == False
