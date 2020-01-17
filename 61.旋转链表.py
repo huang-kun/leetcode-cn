@@ -17,12 +17,50 @@ class ListNode:
 #         self.next = None
 
 class Solution:
+
+    # 队列思路：
+    # 把链表看作成一个队列，向左移动就是一次出队(dequeue)再加上一次入队(inqueue)
+    # 的过程，所以可以把向右移动转换成向左移动，通过重复出队和入队实现移动
+    def rotateRight(self, head: ListNode, k: int) -> ListNode:
+        if k == 0 or head is None or head.next is None:
+            return head
+
+        # 找到tail和链表长度
+        l = 1
+        tail = head
+        while tail.next:
+            l += 1
+            tail = tail.next
+        
+        # 如果k值等于或超过链表长度，调整k值
+        if k >= l:
+            k %= l
+        if k == 0:
+            return head
+        
+        # 将向右移动转换成向左移动
+        m = l - k
+        for _ in range(m):
+            # 出队
+            node = head
+            head = head.next
+            node.next = None
+            # 入队
+            tail.next = node
+            tail = tail.next
+
+        return head
+
+# @lc code=end
+            
+    # 倒数第k个思路：
+    # 向右移动k个位置，相当于将链表中倒数第k个节点（如果k小于链表长度）
+    # 作为新链表的head
     
-    # 问题转化思路：向右移动k个位置，相当于将链表中倒数第k个
-    #             节点（如果k小于链表长度）作为新链表的head
+    # 算法步骤：
     # 1. 如果k值等于或超过链表长度，k取余数
     # 2. 找到链表中倒数第k个节点的方法，用快慢指针，让快指针先走k-1步
-    def rotateRight(self, head: ListNode, k: int) -> ListNode:
+    def rotateRight1(self, head: ListNode, k: int) -> ListNode:
         if k == 0 or head is None or head.next is None:
             return head
         
@@ -59,7 +97,6 @@ class Solution:
         fast.next = head
         return slow
 
-# @lc code=end
 
 # -------
 # 测试用例
