@@ -47,6 +47,12 @@
 # 
 #
 
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
 # @lc code=start
 # Definition for a binary tree node.
 # class TreeNode:
@@ -56,7 +62,34 @@
 #         self.right = None
 
 class Solution:
+
+    # 深度优先遍历法：
     def isValidBST(self, root: TreeNode) -> bool:
+        """满足二叉搜索树的条件：minVal < node.val < maxVal"""
+        if root is None:
+            return True
+        
+        # 用栈来记录每个节点以及节点值的有效范围
+        stack = [(root, None, None)]
+        while len(stack) > 0:
+            node, minVal, maxVal = stack.pop()
+            
+            if minVal is not None and node.val <= minVal:
+                return False
+            if maxVal is not None and node.val >= maxVal:
+                return False
+            
+            if node.left:
+                stack.append((node.left, minVal, node.val))
+            if node.right:
+                stack.append((node.right, node.val, maxVal))
+        
+        return True
+
+# @lc code=end
+
+    # 递归法：
+    def isValidBST1(self, root: TreeNode) -> bool:
         return self._isValidBST(root, None, None)
     
     def _isValidBST(self, root: TreeNode, minVal: int, maxVal: int) -> bool:
@@ -73,8 +106,6 @@ class Solution:
         return self._isValidBST(root.left, minVal, root.val) and \
                 self._isValidBST(root.right, root.val, maxVal)
         
-# @lc code=end
-
 # 比如二叉搜索树：
 #  10
 #  / \
