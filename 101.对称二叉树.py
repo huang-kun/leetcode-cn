@@ -49,12 +49,45 @@
 
 class Solution:
 
+    # 广度优先遍历：
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if root is None:
+            return True
+        
+        f1, f2 = 0, 0
+        queue1, queue2 = [root], [root]
+        
+        while f1 < len(queue1) and f2 < len(queue2) and len(queue1) == len(queue2):
+            # 出队
+            node1 = queue1[f1]
+            f1 += 1
+            node2 = queue2[f2]
+            f2 += 1
+            
+            # 比较
+            if node1 is None and node2 is None:
+                continue
+            elif node1 is None or node2 is None:
+                return False
+            elif node1.val != node2.val:
+                return False
+            
+            # 入队（一个队列从左向右收集，另一个队列从右向左收集）
+            queue1.append(node1.left)
+            queue1.append(node1.right)
+            queue2.append(node2.right)
+            queue2.append(node2.left)
+        
+        return True
+
+# @lc code=end
+
     # 根据官方题解，学到了用递归实现的思路。可以参照官方题解关于递归的图片和解释：
     # https://leetcode-cn.com/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-by-leetcode/
     # 如果同时满足下面的条件，两个树互为镜像：
     # 1. 它们的两个根结点具有相同的值。
     # 2. 每个树的右子树都与另一个树的左子树镜像对称。
-    def isSymmetric(self, root: TreeNode) -> bool:
+    def isSymmetric2(self, root: TreeNode) -> bool:
         return self.isMirror(root, root)
     
     def isMirror(self, t1: TreeNode, t2: TreeNode):
@@ -66,7 +99,7 @@ class Solution:
         return t1.val == t2.val and \
                self.isMirror(t1.left, t2.right) and \
                self.isMirror(t1.right, t2.left)
-# @lc code=end
+
 
     # 深度优先遍历法，如果是对称的，说明从左边遍历的结果和从右边遍历的结果是相同的。
     def isSymmetric1(self, root: TreeNode) -> bool:
