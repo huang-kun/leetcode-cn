@@ -48,8 +48,28 @@
 #         self.right = None
 
 class Solution:
-    # 深度优先遍历法，如果是对称的，说明从左边遍历的结果和从右边遍历的结果是相同的。
+
+    # 根据官方题解，学到了用递归实现的思路。可以参照官方题解关于递归的图片和解释：
+    # https://leetcode-cn.com/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-by-leetcode/
+    # 如果同时满足下面的条件，两个树互为镜像：
+    # 1. 它们的两个根结点具有相同的值。
+    # 2. 每个树的右子树都与另一个树的左子树镜像对称。
     def isSymmetric(self, root: TreeNode) -> bool:
+        return self.isMirror(root, root)
+    
+    def isMirror(self, t1: TreeNode, t2: TreeNode):
+        if t1 is None and t2 is None:
+            return True
+        elif t1 is None or t2 is None:
+            return False
+        
+        return t1.val == t2.val and \
+               self.isMirror(t1.left, t2.right) and \
+               self.isMirror(t1.right, t2.left)
+# @lc code=end
+
+    # 深度优先遍历法，如果是对称的，说明从左边遍历的结果和从右边遍历的结果是相同的。
+    def isSymmetric1(self, root: TreeNode) -> bool:
         if root is None:
             return True
         
@@ -76,6 +96,4 @@ class Solution:
             stack2.append(node2.left)
             
         return len(stack1) == len(stack2) and len(stack1) == 0
-        
-# @lc code=end
 
