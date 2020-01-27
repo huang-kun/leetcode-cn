@@ -6,65 +6,47 @@
 
 # @lc code=start
 class Solution:
-
-    def reverse(self, x):
-        number = abs(x)
-        re_num = 0
-
-        # 获取该整数的位数
-        place = len(str(number))
-
-        # 在python版本的do while循环中进行以下操作：
-        # 1. 从个位数开始获取当前数位上的数字
-        # 2. 计算出将其反转到高位后的数字，并加入到结果中
-        # 3. 更新剩余数字和数位
-        while True:
-            digit = number % 10
-            re_num += digit * (10 ** (place - 1))
-            number //= 10
-            place -= 1
-            if place == 0:
-                break
+    # 之前自己刷了3次，结果还是输给了官方题解：
+    # 1. 不使用堆栈和数组的前提下，进行数字反转
+    # 2. 对于反转后的数字计算过程中，需要时刻防止溢出
+    # https://leetcode-cn.com/problems/reverse-integer/solution/zheng-shu-fan-zhuan-by-leetcode/
+    def reverse(self, x: int) -> int:
+        # python在取余数和整除运算中，会因为向下取整的规则
+        # 导致结果跟预期不一致，因此下面出现的所有取余数和
+        # 整除的运算，都按正整数来计算
         
-        if x < 0:
-            re_num *= -1
+        # 反转后整数的安全范围[-2147483648, 2147483647]
+        INT_MIN = -2 ** 31
+        INT_MAX = -1 * (INT_MIN + 1)
+        
+        UPPER_THRESHOLD = INT_MAX // 10
+        LOWER_THRESHOLD = UPPER_THRESHOLD * (-1)
+        
+        num = abs(x)
+        rev = 0
 
-        limit = 2 ** 31
-        if re_num < -limit or re_num > limit - 1:
-            return 0
+        while num > 0:
+            pop = num % 10
+            num //= 10
 
-        return re_num
+            if x < 0:
+                pop *= -1
+
+            # 事先判断整数rev是否将要溢出
+            if rev > UPPER_THRESHOLD:
+                return 0
+            elif rev == UPPER_THRESHOLD and pop > 7:
+                return 0
+            elif rev < LOWER_THRESHOLD:
+                return 0
+            elif rev == LOWER_THRESHOLD and pop < -8:
+                return 0
+            # 安全赋值
+            rev = rev * 10 + pop
+        
+        return rev
         
 # @lc code=end
-
-    def reverse1(self, x: int) -> int:
-        """
-        在完成了该方法的实现以后，我想到其实可以去除digits列表的部分，
-        直接从整数分解到每个数位上的数字时也许可以直接转换到结果上面，
-        省去了列表的遍历。该方法保留了最初实现整数反转的思路。
-        """
-        
-        n = abs(x)
-
-        # 首先将整数分解成由数字组成的倒叙列表
-        digits = []
-        while n >= 10:
-            m = n % 10
-            digits.append(m)
-            n //= 10
-        digits.append(n)
-        
-        # 再将列表中的数字结合成整数
-        r = 0
-        count = len(digits)
-        for (i, n) in enumerate(digits):
-            r += n * pow(10, count-i-1)
-
-        # 题目限制：只接受32位的有符号整数
-        if r > pow(2, 31) - 1:
-            return 0
-
-        return r if x > 0 else -r
 
 if __name__ == "__main__":
     s = Solution()
@@ -73,3 +55,4 @@ if __name__ == "__main__":
     assert s.reverse(120) == 21
     assert s.reverse(1534236469) == 0
     assert s.reverse(1563847412) == 0
+    assert s.reverse(-1563847412) == 0
