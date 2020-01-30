@@ -56,11 +56,40 @@
 #         self.right = None
 
 class Solution:
-    # 递归
+    # 迭代
     def inorderTraversal(self, root: TreeNode) -> List[int]:
+        if root is None:
+            return []
+        
+        # 使用栈来保存节点，以及一个是否访问过该节点的左右子节点的标记
+        # 因为只有访问过该节点的左右子节点，才能以正确的顺序将三个节点
+        # 依次入栈，否则该节点只作为临时占位，不能收集到最终结果里。
+        stack = [(root, False)]
+        array = []
+        
+        while len(stack):
+            node, visited = stack.pop()
+            if visited:
+                # 收集访问过的节点值
+                array.append(node.val)
+            else:
+                # 右节点先入栈
+                if node.right:
+                    stack.append((node.right, False))
+                # 根节点再入栈（并且标记为已访问）
+                stack.append((node, True))
+                # 左节点最后入栈
+                if node.left:
+                    stack.append((node.left, False))
+        
+        return array
+
+# @lc code=end
+
+    # 递归
+    def inorderTraversal1(self, root: TreeNode) -> List[int]:
         if root is None:
             return []
         return self.inorderTraversal(root.left) + [root.val] + self.inorderTraversal(root.right)
         
-# @lc code=end
 
