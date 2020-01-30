@@ -61,8 +61,16 @@
 #         self.right = None
 
 class Solution:
-    # 非递归
+    # 递归
     def preorderTraversal(self, root: TreeNode) -> List[int]:
+        if root is None:
+            return []
+        return [root.val] + self.preorderTraversal(root.left) + self.preorderTraversal(root.right)
+
+# @lc code=end
+
+    # 非递归
+    def preorderTraversal1(self, root: TreeNode) -> List[int]:
         if root is None:
             return []
         
@@ -79,5 +87,4 @@ class Solution:
 
         return array
         
-# @lc code=end
 
