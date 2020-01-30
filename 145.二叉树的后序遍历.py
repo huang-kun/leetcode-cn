@@ -57,11 +57,41 @@
 #         self.right = None
 
 class Solution:
-    # 递归
+    # 迭代
     def postorderTraversal(self, root: TreeNode) -> List[int]:
+        if root is None:
+            return []
+        
+        # 使用栈来保存节点，以及一个是否访问过该节点的左右子节点的标记
+        # 因为只有访问过该节点的左右子节点，才能以正确的顺序将三个节点
+        # 依次入栈，否则该节点只作为临时占位，不能收集到最终结果里。
+        stack = [(root, False)]
+        array = []
+
+        while len(stack):
+            # 出栈
+            node, visited = stack.pop()
+            if visited:
+                # 收集位置确定的元素
+                array.append(node.val)
+            else:
+                # 根节点先入栈（因为这里即将访问到它的左右节点，所以入栈后最终位置确定）
+                stack.append((node, True))
+                # 右节点再入栈（因为还没有访问过它的左右节点，所以它只是临时占位）
+                if node.right:
+                    stack.append((node.right, False))
+                # 左节点最后入栈（因为还没有访问过它的左右节点，所以它只是临时占位）
+                if node.left:
+                    stack.append((node.left, False))
+        
+        return array
+
+# @lc code=end
+
+    # 递归
+    def postorderTraversal1(self, root: TreeNode) -> List[int]:
         if root is None:
             return []
         return self.postorderTraversal(root.left) + self.postorderTraversal(root.right) + [root.val]
         
-# @lc code=end
 
