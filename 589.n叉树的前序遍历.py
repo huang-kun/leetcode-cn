@@ -39,8 +39,28 @@ class Node:
         self.children = children
 """
 class Solution:
-    # 递归
+    # 迭代
     def preorder(self, root: 'Node') -> List[int]:
+        if root is None:
+            return []
+        
+        array = []
+        stack = [root]
+        
+        while len(stack):
+            node = stack.pop()
+            array.append(node.val)
+
+            if node.children:
+                for child in reversed(node.children):
+                    stack.append(child)
+        
+        return array
+
+# @lc code=end
+
+    # 递归
+    def preorder1(self, root: 'Node') -> List[int]:
         if root is None:
             return []
 
@@ -51,5 +71,4 @@ class Solution:
         
         return array
         
-# @lc code=end
 
