@@ -39,8 +39,28 @@ class Node:
         self.children = children
 """
 class Solution:
-    # 递归
+    # 迭代
     def postorder(self, root: 'Node') -> List[int]:
+        if root is None:
+            return []
+        
+        array = []
+        stack = [(root, False)]
+        
+        while len(stack):
+            node, visited = stack.pop()
+            if visited:
+                array.append(node.val)
+            else:
+                stack.append((node, True))
+                if node.children:
+                    for child in reversed(node.children):
+                        stack.append((child, False))
+
+# @lc code=end
+
+    # 递归
+    def postorder1(self, root: 'Node') -> List[int]:
         if root is None:
             return []
         
@@ -52,5 +72,4 @@ class Solution:
         array.append(root.val)
         return array
         
-# @lc code=end
 
