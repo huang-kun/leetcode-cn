@@ -44,14 +44,36 @@ class Node:
         self.children = children
 """
 class Solution:
-    # 迭代法：
+    
+    #  深度优先遍历：
     def maxDepth(self, root: 'Node') -> int:
         if root is None:
             return 0
 
+        # 使用栈来追踪节点，以及该节点所在的层级
+        depth = 1
+        stack = [(root, depth)]
+        
+        while len(stack):
+            node, level = stack.pop()
+            depth = max(depth, level)
+
+            if node.children:
+                for child in reversed(node.children):
+                    stack.append((child, level+1))
+        
+        return depth
+
+# @lc code=end
+
+    # 广度优先遍历：
+    def maxDepth1(self, root: 'Node') -> int:
+        if root is None:
+            return 0
+
         # 使用队列来追踪节点，以及该节点所在的层级
-        pos, depth = 0, 0
-        queue = [(root, 1)]
+        pos, depth = 0, 1
+        queue = [(root, depth)]
         
         while pos < len(queue):
             # 模拟出队操作
@@ -66,5 +88,4 @@ class Solution:
         
         return depth
         
-# @lc code=end
 
