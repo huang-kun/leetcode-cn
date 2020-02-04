@@ -13,8 +13,28 @@
 #         self.right = None
 
 class Solution:
-    # 递归
+    # 迭代
     def invertTree(self, root: TreeNode) -> TreeNode:
+        if root is None:
+            return None
+        
+        queue = [root]
+        for node in queue:
+            if node is None:
+                continue
+            
+            temp = node.left
+            node.left = node.right
+            node.right = temp
+            
+            queue.append(node.left)
+            queue.append(node.right)
+
+        return root
+# @lc code=end
+
+    # 递归
+    def invertTree1(self, root: TreeNode) -> TreeNode:
         if root is None:
             return None
         
@@ -26,5 +46,4 @@ class Solution:
 
         return root
         
-# @lc code=end
 
