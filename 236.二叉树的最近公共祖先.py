@@ -13,12 +13,40 @@
 #         self.right = None
 
 class Solution:
+    
     def __init__(self):
         self.cache = {}
         self.pos_p = 0
         self.pos_q = 0
+        self.ans = None
 
-    # 递归
+    # 官方题解：递归（80ms）
+    # https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/solution/er-cha-shu-de-zui-jin-gong-gong-zu-xian-by-leetcod/
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        
+        def findAncestor(node):
+            if node is None:
+                return False
+            is_node = node.val == p.val or node.val == q.val
+            in_left = findAncestor(node.left)
+            in_right = False
+            if is_node and in_left:
+                self.ans = node
+            else:
+                in_right = findAncestor(node.right)
+                if is_node and in_right:
+                    self.ans = node
+                elif in_left and in_right:
+                    self.ans = node
+            return is_node or in_left or in_right
+        
+        findAncestor(root)
+        return self.ans
+
+# @lc code=end
+
+    # 递归撒网找pq（148ms）
+    # 找到p和q所在的位置，然后倒推计算出最近的公共祖先的位置
     def lowestCommonAncestor2(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         if root is None or p is None or q is None:
             return None
@@ -62,8 +90,8 @@ class Solution:
         if root.right:
             self.findPQ(root.right, 2*pos+1, val_p, val_q)
 
-# @lc code=end
-
+    # 遍历撒网找pq（128ms）
+    # 找到p和q所在的位置，然后倒推计算出最近的公共祖先的位置
     def lowestCommonAncestor1(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         if root is None or p is None or q is None:
             return None
