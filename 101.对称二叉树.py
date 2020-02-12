@@ -48,9 +48,46 @@
 #         self.right = None
 
 class Solution:
+    def __init__(self):
+        # 缓存节点位置和值
+        self.cache = {}
+
+    # 同层比较法：在同一个level中，比较当前节点与对称节点的值是否相等。
+    def isSymmetric(self, root: TreeNode) -> bool:
+        if root is None:
+            return True
+        # 使用队列进行层级遍历，收集 (节点, 层级, 位置)
+        queue = [(root, 1, 1)]
+        for node, level, pos in queue:
+            # 缓存当前节点的位置和对应的值
+            self.cache[pos] = node.val
+            # 找出当前节点在所属的level中的对称的节点位置
+            start = 2 ** (level-1)
+            count = 2 ** (level-1)
+            end = start + count - 1
+            offset = pos - start
+            opposite = end - offset
+            # 判断当前节点的值和对称节点的值是否相等
+            if opposite in self.cache:
+                if node.val != self.cache[opposite]:
+                    return False
+            # 继续迭代（即使子节点为空，也要把对应位置的值null记录到字典中）
+            if node.left:
+                queue.append((node.left, level+1, 2*pos))
+            else:
+                self.cache[2*pos] = None
+            
+            if node.right:
+                queue.append((node.right, level+1, 2*pos+1))
+            else:
+                self.cache[2*pos+1] = None
+        
+        return True
+
+# @lc code=end
 
     # 广度优先遍历：
-    def isSymmetric(self, root: TreeNode) -> bool:
+    def isSymmetric3(self, root: TreeNode) -> bool:
         if root is None:
             return True
         
@@ -80,7 +117,6 @@ class Solution:
         
         return True
 
-# @lc code=end
 
     # 根据官方题解，学到了用递归实现的思路。可以参照官方题解关于递归的图片和解释：
     # https://leetcode-cn.com/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-by-leetcode/
