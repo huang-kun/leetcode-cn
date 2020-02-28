@@ -13,12 +13,6 @@
 #         self.right = None
 
 class Solution:
-    
-    def __init__(self):
-        self.cache = {}
-        self.pos_p = 0
-        self.pos_q = 0
-        self.ans = None
 
     # 官方题解思路：无父指针的迭代，使用栈（80 ~ 152ms）
     def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
@@ -56,32 +50,39 @@ class Solution:
 
 # @lc code=end
 
-    # 官方题解思路：递归（80ms）
+class Solution3:
+    # 官方题解思路：递归
     # https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/solution/er-cha-shu-de-zui-jin-gong-gong-zu-xian-by-leetcod/
-    def lowestCommonAncestor3(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
-        
-        def findAncestor(node):
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        lca = root
+
+        def findLCA(node):
             if node is None:
                 return False
-            is_node = node.val == p.val or node.val == q.val
-            in_left = findAncestor(node.left)
-            in_right = False
-            if is_node and in_left:
-                self.ans = node
-            else:
-                in_right = findAncestor(node.right)
-                if is_node and in_right:
-                    self.ans = node
-                elif in_left and in_right:
-                    self.ans = node
-            return is_node or in_left or in_right
+
+            mid = node.val == p.val or node.val == q.val
+            left = findLCA(node.left)
+            right = findLCA(node.right)
+            
+            if mid + left + right >= 2:
+                nonlocal lca
+                lca = node
+            
+            return mid or left or right
         
-        findAncestor(root)
-        return self.ans
+        findLCA(root)
+        return lca
+
+
+class Solution2:
+    def __init__(self):
+        self.cache = {}
+        self.pos_p = 0
+        self.pos_q = 0
 
     # 递归撒网找pq（148ms）
     # 找到p和q所在的位置，然后倒推计算出最近的公共祖先的位置
-    def lowestCommonAncestor2(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         if root is None or p is None or q is None:
             return None
 
@@ -124,9 +125,11 @@ class Solution:
         if root.right:
             self.findPQ(root.right, 2*pos+1, val_p, val_q)
 
+
+class Solution1:
     # 遍历撒网找pq（128ms）
     # 找到p和q所在的位置，然后倒推计算出最近的公共祖先的位置
-    def lowestCommonAncestor1(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         if root is None or p is None or q is None:
             return None
         
@@ -171,6 +174,7 @@ class Solution:
 
         # 如果没有找到公共祖先，返回根节点作为公共祖先
         return root
+
 
 from lctest import *
 def testCase(treestr, nodestr1, nodestr2):
