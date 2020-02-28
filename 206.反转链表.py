@@ -23,80 +23,90 @@ class ListNode:
 #         self.next = None
 
 class Solution:
+    # 递归法：从链表tail开始向前回溯反转
+    def reverseList(self, head: ListNode) -> ListNode:
+        oldTail = head
+        
+        def reverse(curr):
+            # 如果没有next，即找到tail，返回自己
+            if not curr or not curr.next:
+                nonlocal oldTail
+                oldTail = curr
+                return curr
+            # 如果有next，递归next，再将返回的next反转指向自己
+            next = reverse(curr.next)
+            next.next = curr
+            curr.next = None
+            return curr
 
-    # 根据官方思路：按原始顺序迭代结点，并将它们逐个移动到列表的头部。
+        reverse(head)
+        return oldTail
+
+# @lc code=end
+
+class Solution2:
+    # 迭代法：（官方思路）重复将当前节点的next移动到链表的头部。
     # https://leetcode-cn.com/explore/learn/card/linked-list/195/classic-problems/749/
     def reverseList(self, head: ListNode) -> ListNode:
         if head is None:
             return None
         
-        node = head
-        while node.next:
-            next = node.next
-            node.next = node.next.next
+        curr = head
+        while curr.next:
+            next = curr.next
+            curr.next = next.next
             next.next = head
             head = next
 
         return head
 
-# @lc code=end
-
-    # 迭代法：用栈的特性（后进先出）重新构建出的链表即为反转链表
-    def reverseList1(self, head: ListNode) -> ListNode:
-        if head is None:
-            return None
-        
-        stack = []
-        n = head
-        while n is not None:
-            stack.append(n)
-            n = n.next
-        
-        node = stack.pop()
-        first = node
-        while len(stack) > 0:
-            node.next = stack.pop()
-            node = node.next
-        
-        node.next = None
-        return first
-
-    # 递归法
+    # 递归实现：重复将当前节点的next移动到链表的头部。
     def reverseList2(self, head: ListNode) -> ListNode:
-        if head is None:
-            return None
-
-        new_tail, new_head = self._reverseList(head)
-        new_tail.next = None
-        return new_head
-
-    # 递归获取原先的next节点，然后反转指向，同时也要将新链表的头节点一起返回
-    def _reverseList(self, head: ListNode) -> (ListNode, ListNode):
-        if head is None:
-            return None, None
+        h = head
         
-        old_next, old_tail = self._reverseList(head.next)
-        if old_next is not None:
-            old_next.next = head
-        if old_tail is None:
-            old_tail = head
-        return head, old_tail
-    
-    # 迭代法：3个指针一边遍历一边反转，空间复杂度O(1)
-    def reverseList3(self, head: ListNode) -> ListNode:
+        def reverse(curr):
+            if not curr or not curr.next:
+                return
+
+            next = curr.next
+            curr.next = next.next
+            nonlocal h
+            next.next = h
+            h = next
+            
+            reverse(curr)
+        
+        reverse(head)
+        return h
+
+# 指针移动迭代法：
+class Solution1:
+    # 3个指针一边遍历一边反转，空间复杂度O(1)
+    def reverseList(self, head: ListNode) -> ListNode:
         if head is None:
             return None
         # 定义3个指针
-        prev, curr, next = None, head, head.next
+        prev = None
+        curr = head
+        next = head.next
         while next:
             # 反转当前节点的指向
             curr.next = prev
             # 3个指针依次向前移动
-            prev, curr, next = curr, next, next.next
+            prev = curr
+            curr = next
+            next = next.next
         # 反转最后一个节点的指向
         curr.next = prev
         # 最后一个节点成为新的head
         return curr
+
+    # 后来发现用两个指针就够了（参考极客时间算法课）
+    def reverseList2(self, head: ListNode) -> ListNode:
+        prev, curr = None, head
+        while curr:
+            curr.next, prev, curr = prev, curr, curr.next
+        return prev
 
 if __name__ == "__main__":
     s = Solution()
