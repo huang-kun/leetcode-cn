@@ -22,52 +22,68 @@ class ListNode:
 #         self.val = x
 #         self.next = None
 
+# 修改链表：时间复杂度O(N)，空间复杂度O(1)
 class Solution:
-
-    # 重新答题（2020年1月15日）
     def isPalindrome(self, head: ListNode) -> bool:
-        # 快慢指针找到链表中间位置
+        if head is None or head.next is None:
+            return True
+        # 用快慢指针来找链表中间节点。当快指针到达（或超出）链表尾部时，
+        # 慢指针正好走到中间节点（对于偶数节点当链表就是中间位置的下一个）
+        # 意思是对于节点个数为N的链表，中间节点就是第 N // 2 + 1 个节点
         fast = head
         slow = head
+        prev = None
         while fast and fast.next:
-            fast = fast.next.next
+            prev = slow
             slow = slow.next
-            
-        if slow is None:
-            return True
-        if slow.next is None:
-            return slow.val == head.val
-        
-        # 反转链表的后半部分
-        prev, curr, next = None, slow, slow.next
-        while next:
-            curr.next = prev
-            prev, curr, next = curr, next, next.next
-        curr.next = prev
-                
-        # 回文比较
-        p1 = head
-        p2 = curr
-        while p2:
-            if p1.val != p2.val:
+            fast = fast.next.next
+        # 以中间节点为界限，拆分成前后两个链表
+        if prev:
+            prev.next = None
+        # 反转后半部分的链表
+        rev_head = self.reverse(slow)
+        # 把前后两个链表从头到尾进行回文比较
+        n1 = head
+        n2 = rev_head
+        while n1 and n2:
+            if n1.val != n2.val:
                 return False
-            p1 = p1.next
-            p2 = p2.next
+            n1 = n1.next
+            n2 = n2.next
         
         return True
 
-    # @lc code=end
-
-    # 初级思路：将该问题转换为，求解一个数组是否为回文数组？
-    # 需要O(n)的空间将链表转换为数组
-    def isPalindrome2(self, head: ListNode) -> bool:
-        arr = []
-        node = head
-        while node:
-            arr.append(node.val)
-            node = node.next
+    # 用3个指针来反转链表
+    def reverse(self, head):
+        if head is None or head.next is None:
+            return head
         
-        i, j = 0, len(arr) - 1
+        prev = None
+        curr = head
+        next = curr.next
+        
+        while next:
+            curr.next = prev
+            prev = curr
+            curr = next
+            next = next.next
+        
+        curr.next = prev
+        return curr
+
+# @lc code=end
+
+# 链表转数组：时间复杂度O(N)，空间复杂度O(N)
+class Solution1:
+    def isPalindrome(self, head: ListNode) -> bool:
+        arr = []
+        n = head
+        while n is not None:
+            arr.append(n.val)
+            n = n.next
+        
+        i = 0
+        j = len(arr) - 1
         while i < j:
             if arr[i] != arr[j]:
                 return False
@@ -76,40 +92,10 @@ class Solution:
         
         return True
 
-    # 参考用户@王尼玛的图解
-    # https://leetcode-cn.com/problems/palindrome-linked-list/solution/dong-hua-yan-shi-234-hui-wen-lian-biao-by-user7439/
-    def isPalindrome1(self, head: ListNode) -> bool:
-        if head is None or head.next is None:
-            return True
-        
-        # 用双指针（一快一慢）来寻找链表中间节点：
-        fast, slow = head, head
-        while fast and fast.next:
-            fast = fast.next.next
-            slow = slow.next
-        # show此时所在的位置为第(len // 2 + 1)个节点，其中len表示链表节点总数
-        fast = slow
-        slow = head
 
-        # 反转链表的后半部分（需要3个指针）
-        prev, curr, next = None, fast, fast.next
-        while next:
-            # 反转当前节点的指向
-            curr.next = prev
-            # 3个指针依次向前移动
-            prev, curr, next = curr, next, next.next
-        # 反转最后一个节点的指向
-        curr.next = prev
-
-        # 回文比较
-        while curr:
-            if curr.val != slow.val:
-                return False
-            curr = curr.next
-            slow = slow.next
-        
-        return True
-        
+# -------
+# 测试用例
+# -------
 
 def convert(s: str) -> ListNode:
     nodes = list(map(lambda x: ListNode(x), s.split("->")))
