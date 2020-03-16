@@ -53,15 +53,53 @@ class TreeNode:
         self.left = None
         self.right = None
 
-# @lc code=start
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
+# ----------------------------------------------------
+# 方法1：范围限制（递归）
+#
+# 比如二叉搜索树：
+#  10
+#  / \
+# 5  15
+#    / \
+#   12 20
+#
+# 二叉搜索树的每个节点的值都是限制在一个(min, max)区间内的，
+# 而min和max的值都是继承自父节点的，所以验证二叉搜索树的方法
+# 就是：
+# 1. 判断当前节点是否满足min < root.val < max
+# 2. 如果当前节点满足条件，再去递归判断左右子节点
+#    是否都满足条件，并且更新min和max
+#
+#         -inf<[10]<+inf
+#             /    \
+#           /        \
+#         /            \
+#  -inf<[5]<10      10<[15]<+inf
+#                      /   \
+#                    /       \
+#                  /           \
+#             10<[12]<15   15<[20]<+inf
+#
+class Solution1:
+    def isValidBST(self, root: TreeNode) -> bool:
+        # 满足二叉搜索树的条件：min < root.val < max
+        def isBST(root, min, max):
+            if root is None:
+                return True
+            
+            val = root.val
+            if val <= min or val >= max:
+                return False
+            
+            return isBST(root.left, min, val) and \
+                    isBST(root.right, val, max)
+        
+        return isBST(root, float('-inf'), float('inf'))
 
-class Solution:
+# ----------------------------------------------------
+# 方法2：范围限制（迭代），原理同上
+#
+class Solution2:
     # 广度优先遍历法：
     def isValidBST(self, root: TreeNode) -> bool:
         """满足二叉搜索树的条件：minVal < node.val < maxVal"""
@@ -89,8 +127,6 @@ class Solution:
         
         return True
 
-# @lc code=end
-
     # 深度优先遍历法：
     def isValidBST2(self, root: TreeNode) -> bool:
         """满足二叉搜索树的条件：minVal < node.val < maxVal"""
@@ -116,46 +152,27 @@ class Solution:
         
         return True
 
-    # 递归法：
-    def isValidBST1(self, root: TreeNode) -> bool:
-        return self._isValidBST(root, None, None)
-    
-    def _isValidBST(self, root: TreeNode, minVal: int, maxVal: int) -> bool:
-        """满足二叉搜索树的条件：minVal < root.val < maxVal"""
+# ----------------------------------------------------
+# 方法3：中序遍历（左->根->右），题解来源于极客时间
+# 如果是标准二叉搜索树的话，使用中序遍历把树转换成数组，那么一定
+# 会得到一个升序排列的数组。实现这个算法的时候，也可以进一步优化，
+# 比如在中序遍历过程中，每次记录上一个节点prev，确保prev的值总是
+# 小于当前节点值。
+#
+class Solution3:
+    def __init__(self):
+        self.prev = None
+
+    def isValidBST(self, root: TreeNode) -> bool:
         if root is None:
             return True
-        if minVal is not None and root.val <= minVal:
+        if not self.isValidBST(root.left):
             return False
-        if maxVal is not None and root.val >= maxVal:
+        if self.prev and self.prev.val >= root.val:
             return False
-
-        return self._isValidBST(root.left, minVal, root.val) and \
-               self._isValidBST(root.right, root.val, maxVal)
-
-# 比如二叉搜索树：
-#  10
-#  / \
-# 5  15
-#    / \
-#   12 20
-#
-# 二叉搜索树的每个节点的值都是限制在一个(min, max)区间内的，
-# 而min和max的值都是继承自父节点的，所以验证二叉搜索树的方法
-# 就是：
-# 1. 判断当前节点是否满足min < root.val < max
-# 2. 如果当前节点满足条件，再去递归判断左右子节点
-#    是否都满足条件，并且更新min和max
-#
-#         null<[10]<null
-#             /    \
-#           /        \
-#         /            \
-#  null<[5]<10      10<[15]<null
-#                      /   \
-#                    /       \
-#                  /           \
-#             10<[12]<15   15<[20]<null
-
+        
+        self.prev = root
+        return self.isValidBST(root.right)
 
 # -------
 # 测试用例
@@ -225,7 +242,7 @@ def testCase(s, array):
     return s.isValidBST(tree)
 
 if __name__ == '__main__':
-    pass
-    s = Solution()
+    s = Solution1()
     assert testCase(s, [2,1,3]) == True
     assert testCase(s, [5,1,4,None,None,3,6]) == False
+    assert testCase(s, [1,1]) == False
