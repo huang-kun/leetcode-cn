@@ -4,15 +4,31 @@
 # [236] 二叉树的最近公共祖先
 #
 
-# @lc code=start
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
+# 题解参考自极客时间
+class Solution5:
+    # 递归思路，时间复杂度O(N)
+    # 如果root是p或q其中之一的话，说明另一个p或q就在子树里，所以当前作为root的p或q就是LCA
+    # 如果root不是p或q的话，就去子树里找，如果p或q分别在左右子树中找到的话，那么root就是LCA
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root is None:
+            return None
+        if root == p or root == q:
+            return root
+        
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
 
-class Solution:
+        # 如果左子树里找不到，就去右子树里找LCA
+        if left is None:
+            return right
+        # 如果右子树里找不到，就去左子树里找LCA
+        elif right is None:
+            return left
+        # 如果在左右子树中分别找到p和q，说明root是LCA
+        else:
+            return root
+
+class Solution4:
 
     # 官方题解思路：无父指针的迭代，使用栈（80 ~ 152ms）
     def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
@@ -47,8 +63,6 @@ class Solution:
             subarr[1] += 1
                     
         return None
-
-# @lc code=end
 
 class Solution3:
     # 官方题解思路：递归
