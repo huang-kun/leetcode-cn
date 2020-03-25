@@ -7,7 +7,15 @@
 from typing import List
 
 # @lc code=start
+
 class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        pass
+        
+# @lc code=end
+
+# 字典计数法：时间O(N)，空间O(N)
+class Solution1:
     def majorityElement(self, nums: List[int]) -> int:
         total = len(nums)
         half = total / 2
@@ -23,8 +31,22 @@ class Solution:
             d[n] = c
 
         return nums[0] if total > 0 else None
-        
-# @lc code=end
+
+# 排序计数法：时间O(N*logN)，空间O(1)
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        nums.sort()
+        count = 1
+        total = len(nums)
+        for i in range(total):
+            if i > 0 and nums[i] == nums[i-1]:
+                count += 1
+            else:
+                count = 1
+
+            if count > total / 2:
+                return nums[i]
+
 
 if __name__ == "__main__":
     s = Solution()
