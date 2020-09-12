@@ -10,6 +10,26 @@
 # @return a bool
 # def isBadVersion(version):
 
+class Solution2(object):
+    def firstBadVersion(self, n):
+        return self.lookup(1, n)
+
+    def lookup(self, start, end):
+        # 二分查找，判断中间值mid是否为badV
+        # 如果mid是badV，说明firstBadV在[start, mid]里
+        # 如果mid不是badV，说明firstBadV在[mid+1, end]里
+        # 当start == end，说明找到firstBadV
+        if start == end:
+            return start
+        
+        mid = (start + end) // 2
+
+        if isBadVersion(mid):
+            return self.lookup(start, mid)
+        else:
+            return self.lookup(mid+1, end)
+
+
 class Solution:
     
     # 根据官方题解的优化版本：
@@ -54,3 +74,5 @@ class Solution:
         return fbv
         
 
+def isBadVersion(version):
+    pass
